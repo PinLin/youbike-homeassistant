@@ -45,7 +45,7 @@ class YouBikeBaseSensor(CoordinatorEntity[YouBikeCoordinator], SensorEntity):
         self._uid = uid
         # Set entity_id explicitly so it is always UID-based and stable,
         # independent of translation-loading timing.
-        self.entity_id = f"sensor.{uid.lower()}_{self._sensor_type}"
+        self.entity_id = f"sensor.youbike_{uid.lower()}_{self._sensor_type}"
 
     @property
     def _station(self) -> StationData | None:

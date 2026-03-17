@@ -34,7 +34,7 @@ class YouBikeServiceStatusSensor(CoordinatorEntity[YouBikeCoordinator], BinarySe
     def __init__(self, coordinator: YouBikeCoordinator, uid: str) -> None:
         super().__init__(coordinator)
         self._uid = uid
-        self.entity_id = f"binary_sensor.{uid.lower()}_service_status"
+        self.entity_id = f"binary_sensor.youbike_{uid.lower()}_service_status"
 
     @property
     def unique_id(self) -> str:
