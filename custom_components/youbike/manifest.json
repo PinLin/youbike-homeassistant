@@ -1,7 +1,7 @@
 {
   "domain": "youbike",
   "name": "YouBike",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "documentation": "https://github.com/PinLin/youbike-homeassistant",
   "requirements": [],
   "dependencies": [],
