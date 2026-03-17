@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -36,7 +36,6 @@ class YouBikeBaseSensor(CoordinatorEntity[YouBikeCoordinator], SensorEntity):
     """Base class for YouBike sensors."""
 
     _attr_has_entity_name = True
-    _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = "bikes"
     _attr_icon = "mdi:bicycle"
     _sensor_type: str  # defined in each subclass; used for entity_id suffix
