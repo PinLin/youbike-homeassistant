@@ -1,0 +1,11 @@
+update:
+  name: Update
+  description: Refresh YouBike data. If station_ids is provided, only entries containing those stations are refreshed.
+  fields:
+    station_ids:
+      name: Station IDs
+      description: Optional list of station UIDs to target (e.g. KHH501208057). Leave empty to refresh all.
+      required: false
+      example: '["KHH501208057", "NWT500218005"]'
+      selector:
+        object:

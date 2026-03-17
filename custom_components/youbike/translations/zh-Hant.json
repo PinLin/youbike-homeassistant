@@ -1,0 +1,95 @@
+{
+  "config": {
+    "step": {
+      "city": {
+        "title": "選擇城市",
+        "description": "選擇您要監控 YouBike 站點的城市。",
+        "data": {
+          "city": "城市"
+        }
+      },
+      "search": {
+        "title": "搜尋站點",
+        "description": "輸入站點名稱關鍵字進行篩選。",
+        "data": {
+          "keyword": "關鍵字"
+        }
+      },
+      "results": {
+        "title": "選擇站點",
+        "description": "找到 {count} 個站點（關鍵字：{keyword}）。請選取您要監控的站點。",
+        "data": {
+          "station_id": "站點",
+          "back": "重新搜尋"
+        }
+      },
+      "settings": {
+        "title": "更新設定",
+        "description": "設定資料更新頻率。填入 0 表示僅手動更新。",
+        "data": {
+          "scan_interval": "更新間隔（秒）"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "無法取得站點清單，請確認網路是否正常。",
+      "no_station_selected": "請選取一個站點，或勾選「重新搜尋」返回上一步。"
+    },
+    "abort": {
+      "already_configured": "此站點已設定完成。"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "更新設定",
+        "description": "設定資料更新頻率。填入 0 表示僅手動更新。",
+        "data": {
+          "scan_interval": "更新間隔（秒）"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "service_status": {
+        "name": "營運狀態"
+      }
+    },
+    "sensor": {
+      "general_bikes": {
+        "name": "自行車數量"
+      },
+      "electric_bikes": {
+        "name": "電輔車數量"
+      },
+      "available_docks": {
+        "name": "可還空位"
+      },
+      "last_update": {
+        "name": "資料更新時間"
+      }
+    }
+  },
+  "selector": {
+    "city": {
+      "options": {
+        "Taipei": "台北市",
+        "NewTaipei": "新北市",
+        "Taoyuan": "桃園市",
+        "Taichung": "台中市",
+        "Kaohsiung": "高雄市",
+        "Tainan": "臺南市",
+        "Hsinchu": "新竹市",
+        "HsinchuSciencePark": "新竹科學工業園區",
+        "Chiayi": "嘉義市",
+        "HsinchuCounty": "新竹縣",
+        "MiaoliCounty": "苗栗縣",
+        "ChiayiCounty": "嘉義縣",
+        "PingtungCounty": "屏東縣",
+        "TaitungCounty": "臺東縣",
+        "Guangfu": "光復鄉（花蓮）"
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "config": {
+    "step": {
+      "city": {
+        "title": "Select City",
+        "description": "Choose the city where you want to monitor a YouBike station.",
+        "data": {
+          "city": "City"
+        }
+      },
+      "search": {
+        "title": "Search Stations",
+        "description": "Enter a keyword to filter stations by name.",
+        "data": {
+          "keyword": "Keyword"
+        }
+      },
+      "results": {
+        "title": "Select Station",
+        "description": "Found {count} stations matching \"{keyword}\". Select the station you want to monitor.",
+        "data": {
+          "station_id": "Station",
+          "back": "Search again"
+        }
+      },
+      "settings": {
+        "title": "Update Settings",
+        "description": "Set how often to poll for new data. Enter 0 for manual-only updates.",
+        "data": {
+          "scan_interval": "Update interval (seconds)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to fetch station list. Check your network connection.",
+      "no_station_selected": "Please select a station, or check \"Search again\" to go back."
+    },
+    "abort": {
+      "already_configured": "This station is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Update Settings",
+        "description": "Set how often to poll for new data. Enter 0 for manual-only updates.",
+        "data": {
+          "scan_interval": "Update interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "service_status": {
+        "name": "In Service"
+      }
+    },
+    "sensor": {
+      "general_bikes": {
+        "name": "General Bikes"
+      },
+      "electric_bikes": {
+        "name": "Electric-Assist Bikes"
+      },
+      "available_docks": {
+        "name": "Available Docks"
+      },
+      "last_update": {
+        "name": "Last Updated"
+      }
+    }
+  },
+  "selector": {
+    "city": {
+      "options": {
+        "Taipei": "Taipei",
+        "NewTaipei": "New Taipei",
+        "Taoyuan": "Taoyuan",
+        "Taichung": "Taichung",
+        "Kaohsiung": "Kaohsiung",
+        "Tainan": "Tainan",
+        "Hsinchu": "Hsinchu",
+        "HsinchuSciencePark": "Hsinchu Science Park",
+        "Chiayi": "Chiayi",
+        "HsinchuCounty": "Hsinchu County",
+        "MiaoliCounty": "Miaoli County",
+        "ChiayiCounty": "Chiayi County",
+        "PingtungCounty": "Pingtung County",
+        "TaitungCounty": "Taitung County",
+        "Guangfu": "Guangfu (Hualien)"
+      }
+    }
+  }
+}
