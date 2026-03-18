@@ -155,7 +155,7 @@ class YouBikeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             cache = self.hass.data.get(DOMAIN, {}).get("station_cache", {})
             station_name = cache.get(self._station_uid, {}).get("name", self._station_uid)
             city_label = WEBSITE_AVAILABLE_CITIES.get(self._city, self._city)
-            title = f"{city_label} YouBike {station_name}"
+            title = f"{city_label} {station_name}"
             return self.async_create_entry(
                 title=title,
                 data={
