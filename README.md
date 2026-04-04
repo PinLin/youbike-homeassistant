@@ -4,7 +4,7 @@
 [![HACS Badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=flat-square)](https://github.com/hacs/integration)
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
-Home Assistant 自訂整合元件，即時監控 YouBike 站點車輛與車位數量。
+將 YouBike 站點即時資訊整合到 Home Assistant，隨時掌握附近站點的可用車輛與空位數量。
 
 ## 功能特色
 
