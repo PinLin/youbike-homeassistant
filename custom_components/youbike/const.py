@@ -67,7 +67,7 @@ CITY_TO_WEBSITE_UID_PREFIX: dict[str, str] = {
     "Guangfu":            "GFU",
 }
 
-DEFAULT_SCAN_INTERVAL = 300  # seconds; 0 means manual-only
+DEFAULT_SCAN_INTERVAL = 300  # seconds
 
 # Reverse map: uid_prefix → area_code (derived from CITY_TO_WEBSITE_UID_PREFIX + CITY_TO_WEBSITE_AREA_CODE)
 UID_PREFIX_TO_AREA_CODE: dict[str, str] = {

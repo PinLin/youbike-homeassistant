@@ -25,7 +25,7 @@
       },
       "settings": {
         "title": "Update Settings",
-        "description": "Set how often to poll for new data. Enter 0 for manual-only updates.",
+        "description": "Set how often to poll for new data.",
         "data": {
           "scan_interval": "Update interval (seconds)"
         }
@@ -43,7 +43,7 @@
     "step": {
       "init": {
         "title": "Update Settings",
-        "description": "Set how often to poll for new data. Enter 0 for manual-only updates.",
+        "description": "Set how often to poll for new data.",
         "data": {
           "scan_interval": "Update interval (seconds)"
         }

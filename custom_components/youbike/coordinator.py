@@ -39,12 +39,11 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
         scan_interval: int,
         website_api: YouBikeWebsiteApiClient,
     ) -> None:
-        update_interval = timedelta(seconds=scan_interval) if scan_interval > 0 else None
         super().__init__(
             hass,
             _LOGGER,
             name=DOMAIN,
-            update_interval=update_interval,
+            update_interval=timedelta(seconds=scan_interval),
         )
         self._station_ids = [station_id]
         self._entry_id = entry_id

@@ -169,6 +169,7 @@ class YouBikeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema({
                 vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): selector.NumberSelector(
                     selector.NumberSelectorConfig(
+                        min=30,
                         step=1,
                         mode=selector.NumberSelectorMode.BOX,
                     )
@@ -205,6 +206,7 @@ class YouBikeOptionsFlow(config_entries.OptionsFlow):
             data_schema=vol.Schema({
                 vol.Optional(CONF_SCAN_INTERVAL, default=current_interval): selector.NumberSelector(
                     selector.NumberSelectorConfig(
+                        min=30,
                         step=1,
                         mode=selector.NumberSelectorMode.BOX,
                     )

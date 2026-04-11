@@ -25,7 +25,7 @@
       },
       "settings": {
         "title": "更新設定",
-        "description": "設定資料更新頻率。填入 0 表示僅手動更新。",
+        "description": "設定資料更新頻率。",
         "data": {
           "scan_interval": "更新間隔（秒）"
         }
@@ -43,7 +43,7 @@
     "step": {
       "init": {
         "title": "更新設定",
-        "description": "設定資料更新頻率。填入 0 表示僅手動更新。",
+        "description": "設定資料更新頻率。",
         "data": {
           "scan_interval": "更新間隔（秒）"
         }
