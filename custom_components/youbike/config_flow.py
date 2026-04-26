@@ -183,11 +183,13 @@ class YouBikeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return YouBikeOptionsFlow()
 
 
-class YouBikeOptionsFlow(config_entries.OptionsFlow):
+class YouBikeOptionsFlow(config_entries.OptionsFlowWithReload):
     """Options flow — update scan interval only.
 
     HA 2024.11+ injects ``self.config_entry`` automatically, so no custom
-    ``__init__`` is needed.
+    ``__init__`` is needed. ``OptionsFlowWithReload`` (HA 2025.8+) reloads
+    the entry automatically when options change, so the integration doesn't
+    need to register an update listener.
     """
 
     async def async_step_init(

@@ -71,6 +71,18 @@
       }
     }
   },
+  "services": {
+    "update": {
+      "name": "更新站點資料",
+      "description": "重新抓取 YouBike 站點即時資料。若指定站點 ID，只更新包含那些站點的設定項目。",
+      "fields": {
+        "station_ids": {
+          "name": "站點 ID",
+          "description": "選填的站點 UID 清單（例如 KHH501208057）。留空表示更新全部設定項目。"
+        }
+      }
+    }
+  },
   "selector": {
     "city": {
       "options": {

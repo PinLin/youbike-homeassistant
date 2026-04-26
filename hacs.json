@@ -2,5 +2,5 @@
   "name": "YouBike",
   "render_readme": true,
   "hide_default_branch": true,
-  "homeassistant": "2024.11.0"
+  "homeassistant": "2025.8.0"
 }

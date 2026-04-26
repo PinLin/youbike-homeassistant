@@ -13,6 +13,10 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
+class YouBikeApiError(Exception):
+    """Raised when the YouBike API call fails (network or unparseable response)."""
+
+
 class YouBikeWebsiteApiClient:
     """Client for YouBike Official Website API (no auth required).
 
@@ -37,9 +41,14 @@ class YouBikeWebsiteApiClient:
         _LOGGER.debug(
             "Fetching YouBike website station list for area_code=%s", area_code
         )
-        async with self._session.get(YOUBIKE_WEBSITE_STATION_URL, timeout=self._TIMEOUT) as resp:
-            resp.raise_for_status()
-            data = await resp.json(content_type=None)
+        try:
+            async with self._session.get(YOUBIKE_WEBSITE_STATION_URL, timeout=self._TIMEOUT) as resp:
+                resp.raise_for_status()
+                data = await resp.json(content_type=None)
+        except aiohttp.ClientError as err:
+            raise YouBikeApiError(
+                f"network error fetching station list: {err}"
+            ) from err
 
         if not isinstance(data, list):
             _LOGGER.warning("Unexpected station list format from website API")
@@ -85,13 +94,18 @@ class YouBikeWebsiteApiClient:
                 "Fetching website availability for %d stations (batch %d)",
                 len(batch), i // self._BATCH_SIZE + 1,
             )
-            async with self._session.post(
-                YOUBIKE_WEBSITE_PARKING_URL,
-                json={"station_no": batch},
-                timeout=self._TIMEOUT,
-            ) as resp:
-                resp.raise_for_status()
-                data = await resp.json(content_type=None)
+            try:
+                async with self._session.post(
+                    YOUBIKE_WEBSITE_PARKING_URL,
+                    json={"station_no": batch},
+                    timeout=self._TIMEOUT,
+                ) as resp:
+                    resp.raise_for_status()
+                    data = await resp.json(content_type=None)
+            except aiohttp.ClientError as err:
+                raise YouBikeApiError(
+                    f"network error fetching availability: {err}"
+                ) from err
 
             ret_val = data.get("retVal", {})
             stations_data = ret_val.get("data", []) if isinstance(ret_val, dict) else []

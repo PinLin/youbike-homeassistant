@@ -9,7 +9,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
-from .api import YouBikeWebsiteApiClient
+from .api import YouBikeApiError, YouBikeWebsiteApiClient
 from .const import DOMAIN, EVENT_UPDATED, UID_PREFIX_TO_AREA_CODE
 
 _LOGGER = logging.getLogger(__name__)
@@ -88,7 +88,7 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
 
         try:
             avail = await self._website_api.async_fetch_availability([station_no])
-        except Exception as exc:
+        except YouBikeApiError as exc:
             _LOGGER.error("Failed to fetch website availability for %s: %s", uid, exc)
             raise UpdateFailed(f"Error fetching availability: {exc}") from exc
 
