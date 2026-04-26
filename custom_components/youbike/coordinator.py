@@ -31,6 +31,11 @@ class StationData:
 class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
     """Coordinator that fetches YouBike data for a single station."""
 
+    # Tolerate this many consecutive failures by returning the previous data
+    # so a brief upstream blip doesn't make every entity flip to unavailable.
+    # The Official Website API is unofficial and known to hiccup occasionally.
+    _MAX_CONSECUTIVE_FAILURES = 2
+
     def __init__(
         self,
         hass: HomeAssistant,
@@ -49,6 +54,7 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
         self._station_ids = [station_id]
         self._entry_id = entry_id
         self._website_api = website_api
+        self._consecutive_failures = 0
 
     def _uid_prefix(self, uid: str) -> str | None:
         for prefix in UID_PREFIX_TO_AREA_CODE:
@@ -57,8 +63,28 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
         return None
 
     async def _async_update_data(self) -> dict[str, StationData]:
-        _LOGGER.debug("Updating YouBike data for station: %s", self._station_ids[0])
-        result = await self._async_update_website()
+        uid = self._station_ids[0]
+        _LOGGER.debug("Updating YouBike data for station: %s", uid)
+        try:
+            result = await self._async_update_website()
+        except YouBikeApiError as exc:
+            self._consecutive_failures += 1
+            if (
+                self._consecutive_failures < self._MAX_CONSECUTIVE_FAILURES
+                and self.data is not None
+            ):
+                _LOGGER.warning(
+                    "YouBike: transient failure %d/%d, keeping last known data for %s: %s",
+                    self._consecutive_failures,
+                    self._MAX_CONSECUTIVE_FAILURES,
+                    uid,
+                    exc,
+                )
+                return self.data
+            _LOGGER.error("Failed to fetch website availability for %s: %s", uid, exc)
+            raise UpdateFailed(f"Error fetching availability: {exc}") from exc
+
+        self._consecutive_failures = 0
         self.hass.bus.async_fire(
             EVENT_UPDATED,
             {
@@ -86,11 +112,7 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
 
         station_no = uid[len(uid_prefix):]
 
-        try:
-            avail = await self._website_api.async_fetch_availability([station_no])
-        except YouBikeApiError as exc:
-            _LOGGER.error("Failed to fetch website availability for %s: %s", uid, exc)
-            raise UpdateFailed(f"Error fetching availability: {exc}") from exc
+        avail = await self._website_api.async_fetch_availability([station_no])
 
         # Read name and location from integration-level cache
         cache = self.hass.data.get(DOMAIN, {}).get("station_cache", {})
