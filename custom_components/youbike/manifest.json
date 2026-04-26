@@ -3,6 +3,7 @@
   "name": "YouBike",
   "version": "0.1.4",
   "documentation": "https://github.com/PinLin/youbike-homeassistant",
+  "issue_tracker": "https://github.com/PinLin/youbike-homeassistant/issues",
   "requirements": [],
   "dependencies": [],
   "codeowners": ["@PinLin"],

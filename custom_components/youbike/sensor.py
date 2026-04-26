@@ -7,12 +7,10 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
-from .coordinator import StationData, YouBikeCoordinator
+from .coordinator import YouBikeCoordinator
+from .entity import YouBikeEntityBase
 
 
 async def async_setup_entry(
@@ -33,26 +31,16 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class YouBikeBaseSensor(CoordinatorEntity[YouBikeCoordinator], SensorEntity):
-    """Base class for YouBike sensors."""
+class YouBikeBaseSensor(YouBikeEntityBase, SensorEntity):
+    """Sensor base — adds platform-specific defaults and entity_id."""
 
-    _attr_has_entity_name = True
     _attr_native_unit_of_measurement = "bikes"
     _attr_icon = "mdi:bicycle"
-    _sensor_type: str  # defined in each subclass; used for entity_id suffix
 
     def __init__(self, coordinator: YouBikeCoordinator, uid: str) -> None:
-        super().__init__(coordinator)
-        self._uid = uid
-        # Set entity_id explicitly so it is always UID-based and stable,
-        # independent of translation-loading timing.
+        super().__init__(coordinator, uid)
+        # Entity_id is UID-based and stable, independent of translation timing.
         self.entity_id = f"sensor.youbike_{uid.lower()}_{self._sensor_type}"
-
-    @property
-    def _station(self) -> StationData | None:
-        if self.coordinator.data:
-            return self.coordinator.data.get(self._uid)
-        return None
 
     @property
     def available(self) -> bool:
@@ -70,16 +58,6 @@ class YouBikeBaseSensor(CoordinatorEntity[YouBikeCoordinator], SensorEntity):
             return {"latitude": station.latitude, "longitude": station.longitude}
         return None
 
-    @property
-    def device_info(self) -> DeviceInfo:
-        station = self._station
-        return DeviceInfo(
-            identifiers={(DOMAIN, self._uid)},
-            name=station.name if station else self._uid,
-            model=self._uid,
-            manufacturer="YouBike",
-        )
-
 
 class YouBikeGeneralBikeSensor(YouBikeBaseSensor):
     """Sensor for available general (non-electric) bikes to rent."""
@@ -87,10 +65,6 @@ class YouBikeGeneralBikeSensor(YouBikeBaseSensor):
     _sensor_type = "general_bikes"
     _attr_icon = "mdi:bicycle"
     _attr_translation_key = "general_bikes"
-
-    @property
-    def unique_id(self) -> str:
-        return f"youbike_{self._uid.lower()}_general_bikes"
 
     @property
     def native_value(self) -> int | None:
@@ -106,10 +80,6 @@ class YouBikeElectricBikeSensor(YouBikeBaseSensor):
     _attr_translation_key = "electric_bikes"
 
     @property
-    def unique_id(self) -> str:
-        return f"youbike_{self._uid.lower()}_electric_bikes"
-
-    @property
     def native_value(self) -> int | None:
         station = self._station
         return station.available_rent_electric if station else None
@@ -121,10 +91,6 @@ class YouBikeReturnSensor(YouBikeBaseSensor):
     _sensor_type = "available_docks"
     _attr_icon = "mdi:bicycle-basket"
     _attr_translation_key = "available_docks"
-
-    @property
-    def unique_id(self) -> str:
-        return f"youbike_{self._uid.lower()}_available_docks"
 
     @property
     def native_value(self) -> int | None:
@@ -141,10 +107,6 @@ class YouBikeLastUpdateSensor(YouBikeBaseSensor):
     _attr_icon = "mdi:clock-outline"
     _attr_translation_key = "last_update"
     _attr_entity_category = EntityCategory.DIAGNOSTIC
-
-    @property
-    def unique_id(self) -> str:
-        return f"youbike_{self._uid.lower()}_last_update"
 
     @property
     def native_value(self) -> datetime | None:
