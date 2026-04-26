@@ -1,8 +1,12 @@
 """YouBike binary sensor — station service status."""
 from __future__ import annotations
 
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.binary_sensor import (
+    BinarySensorDeviceClass,
+    BinarySensorEntity,
+)
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -30,6 +34,8 @@ class YouBikeServiceStatusSensor(CoordinatorEntity[YouBikeCoordinator], BinarySe
 
     _attr_has_entity_name = True
     _attr_translation_key = "service_status"
+    _attr_device_class = BinarySensorDeviceClass.RUNNING
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, coordinator: YouBikeCoordinator, uid: str) -> None:
         super().__init__(coordinator)

@@ -55,28 +55,25 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
                 return prefix
         return None
 
-    async def async_refresh(self) -> None:
-        """Refresh data and fire youbike_updated event when done."""
-        await super().async_refresh()
-        event_data: dict = {
-            "entry_id": self._entry_id,
-            "success": self.last_update_success,
-        }
-        if self.last_update_success and self.data:
-            event_data["stations"] = {
-                uid: {
-                    "name": s.name,
-                    "available_rent_general": s.available_rent_general,
-                    "available_rent_electric": s.available_rent_electric,
-                    "available_return": s.available_return,
-                }
-                for uid, s in self.data.items()
-            }
-        self.hass.bus.async_fire(EVENT_UPDATED, event_data)
-
     async def _async_update_data(self) -> dict[str, StationData]:
         _LOGGER.debug("Updating YouBike data for station: %s", self._station_ids[0])
-        return await self._async_update_website()
+        result = await self._async_update_website()
+        self.hass.bus.async_fire(
+            EVENT_UPDATED,
+            {
+                "entry_id": self._entry_id,
+                "stations": {
+                    uid: {
+                        "name": s.name,
+                        "available_rent_general": s.available_rent_general,
+                        "available_rent_electric": s.available_rent_electric,
+                        "available_return": s.available_return,
+                    }
+                    for uid, s in result.items()
+                },
+            },
+        )
+        return result
 
     async def _async_update_website(self) -> dict[str, StationData]:
         fetch_time = dt_util.now()
@@ -109,7 +106,7 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
             general = int(detail.get("yb2") or 0)
             electric = int(detail.get("eyb") or 0)
             ret = int(item.get("empty_spaces") or 0)
-            status = int(item.get("status") or 1)
+            status = int(item.get("status", 1))
             result[uid] = StationData(
                 uid, name, general, electric, ret, status,
                 fetch_time, lat, lng,

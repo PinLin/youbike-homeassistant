@@ -5,6 +5,7 @@ from datetime import datetime
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -136,10 +137,10 @@ class YouBikeLastUpdateSensor(YouBikeBaseSensor):
 
     _sensor_type = "last_update"
     _attr_device_class = SensorDeviceClass.TIMESTAMP
-    _attr_state_class = None
     _attr_native_unit_of_measurement = None
     _attr_icon = "mdi:clock-outline"
     _attr_translation_key = "last_update"
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def unique_id(self) -> str:

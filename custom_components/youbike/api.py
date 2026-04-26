@@ -20,6 +20,7 @@ class YouBikeWebsiteApiClient:
     """
 
     _BATCH_SIZE = 20
+    _TIMEOUT = aiohttp.ClientTimeout(total=15)
 
     def __init__(self, session: aiohttp.ClientSession) -> None:
         self._session = session
@@ -36,7 +37,7 @@ class YouBikeWebsiteApiClient:
         _LOGGER.debug(
             "Fetching YouBike website station list for area_code=%s", area_code
         )
-        async with self._session.get(YOUBIKE_WEBSITE_STATION_URL) as resp:
+        async with self._session.get(YOUBIKE_WEBSITE_STATION_URL, timeout=self._TIMEOUT) as resp:
             resp.raise_for_status()
             data = await resp.json(content_type=None)
 
@@ -87,6 +88,7 @@ class YouBikeWebsiteApiClient:
             async with self._session.post(
                 YOUBIKE_WEBSITE_PARKING_URL,
                 json={"station_no": batch},
+                timeout=self._TIMEOUT,
             ) as resp:
                 resp.raise_for_status()
                 data = await resp.json(content_type=None)

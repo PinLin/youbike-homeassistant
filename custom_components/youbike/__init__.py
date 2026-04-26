@@ -3,12 +3,12 @@ from __future__ import annotations
 
 import logging
 
-import aiohttp
 import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.util import dt as dt_util
 
 from .api import YouBikeWebsiteApiClient
@@ -35,7 +35,7 @@ async def async_ensure_area_cached(
 ) -> None:
     """Populate integration-level station cache for an area, with 24h TTL.
 
-    Uses its own temporary aiohttp session. Silently ignores fetch errors.
+    Uses HA's shared aiohttp client session. Silently ignores fetch errors.
     """
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN].setdefault("station_cache", {})
@@ -48,9 +48,8 @@ async def async_ensure_area_cached(
             return
 
     try:
-        async with aiohttp.ClientSession() as session:
-            client = YouBikeWebsiteApiClient(session)
-            stations = await client.async_fetch_stations_for_area(area_code, uid_prefix)
+        client = YouBikeWebsiteApiClient(async_get_clientsession(hass))
+        stations = await client.async_fetch_stations_for_area(area_code, uid_prefix)
         cache = hass.data[DOMAIN]["station_cache"]
         for s in stations:
             cache[s["uid"]] = {
@@ -89,8 +88,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     else:
         _LOGGER.warning("Unknown UID prefix for station %s; name cache skipped", station_uid)
 
-    session = aiohttp.ClientSession()
-    website_client = YouBikeWebsiteApiClient(session)
+    website_client = YouBikeWebsiteApiClient(async_get_clientsession(hass))
 
     coordinator = YouBikeCoordinator(
         hass=hass,
@@ -109,7 +107,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await coordinator.async_config_entry_first_refresh()
     except Exception as exc:
         _LOGGER.error("First refresh failed for YouBike entry %s: %s", entry.entry_id, exc)
-        await session.close()
         raise ConfigEntryNotReady from exc
 
     entry.runtime_data = coordinator
@@ -153,10 +150,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     _LOGGER.info("Unloading YouBike entry %s", entry.entry_id)
     unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-
-    if hasattr(entry, "runtime_data"):
-        coordinator: YouBikeCoordinator = entry.runtime_data
-        await coordinator._website_api._session.close()
 
     remaining = [
         e for e in hass.config_entries.async_entries(DOMAIN) if e.entry_id != entry.entry_id
