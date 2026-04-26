@@ -42,7 +42,8 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
         super().__init__(
             hass,
             _LOGGER,
-            name=DOMAIN,
+            # Unique per entry so multi-entry logs don't all collide under one logger.
+            name=f"{DOMAIN}_{entry_id}",
             update_interval=timedelta(seconds=scan_interval),
         )
         self._station_ids = [station_id]

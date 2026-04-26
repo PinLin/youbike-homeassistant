@@ -180,19 +180,20 @@ class YouBikeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> YouBikeOptionsFlow:
-        return YouBikeOptionsFlow(config_entry)
+        return YouBikeOptionsFlow()
 
 
 class YouBikeOptionsFlow(config_entries.OptionsFlow):
-    """Options flow — update scan interval only."""
+    """Options flow — update scan interval only.
 
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        self._config_entry = config_entry
+    HA 2024.11+ injects ``self.config_entry`` automatically, so no custom
+    ``__init__`` is needed.
+    """
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> config_entries.FlowResult:
-        cfg = {**self._config_entry.data, **self._config_entry.options}
+        cfg = {**self.config_entry.data, **self.config_entry.options}
         current_interval = int(cfg.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
 
         if user_input is not None:

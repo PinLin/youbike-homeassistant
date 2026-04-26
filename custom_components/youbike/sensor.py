@@ -3,7 +3,11 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorStateClass,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
@@ -65,6 +69,7 @@ class YouBikeGeneralBikeSensor(YouBikeBaseSensor):
     _sensor_type = "general_bikes"
     _attr_icon = "mdi:bicycle"
     _attr_translation_key = "general_bikes"
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def native_value(self) -> int | None:
@@ -78,6 +83,7 @@ class YouBikeElectricBikeSensor(YouBikeBaseSensor):
     _sensor_type = "electric_bikes"
     _attr_icon = "mdi:bicycle-electric"
     _attr_translation_key = "electric_bikes"
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def native_value(self) -> int | None:
@@ -91,6 +97,7 @@ class YouBikeReturnSensor(YouBikeBaseSensor):
     _sensor_type = "available_docks"
     _attr_icon = "mdi:bicycle-basket"
     _attr_translation_key = "available_docks"
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def native_value(self) -> int | None:
