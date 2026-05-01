@@ -100,4 +100,4 @@ Each config entry owns one `aiohttp.ClientSession`. Closed in `async_unload_entr
 
 ## Deployment
 
-rsync to `keelunghome.netbird.cloud` + `ha core restart`
+rsync to a Home Assistant test host + `ha core restart`
