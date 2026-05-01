@@ -43,6 +43,7 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
         entry_id: str,
         scan_interval: int,
         website_api: YouBikeWebsiteApiClient,
+        station_name: str,
     ) -> None:
         super().__init__(
             hass,
@@ -54,7 +55,18 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
         self._station_ids = [station_id]
         self._entry_id = entry_id
         self._website_api = website_api
+        self._station_name = station_name
         self._consecutive_failures = 0
+
+    @property
+    def station_ids(self) -> tuple[str, ...]:
+        """Station IDs handled by this coordinator."""
+        return tuple(self._station_ids)
+
+    @property
+    def station_name(self) -> str:
+        """Display name for this station when fresh data is not available yet."""
+        return self._station_name
 
     def _uid_prefix(self, uid: str) -> str | None:
         for prefix in UID_PREFIX_TO_AREA_CODE:

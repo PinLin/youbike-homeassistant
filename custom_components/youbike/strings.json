@@ -74,11 +74,11 @@
   "services": {
     "update": {
       "name": "Refresh station data",
-      "description": "Refresh YouBike station availability. If station IDs are provided, only entries containing those stations are refreshed.",
+      "description": "Refresh YouBike station availability.",
       "fields": {
         "station_ids": {
           "name": "Station IDs",
-          "description": "Optional list of station UIDs to target (e.g. KHH501208057). Leave empty to refresh all entries."
+          "description": "Station UIDs to refresh (e.g. KHH501208057). Leave empty to refresh all stations."
         }
       }
     }

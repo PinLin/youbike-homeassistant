@@ -87,6 +87,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await async_ensure_area_cached(hass, area_code, uid_prefix)
     else:
         _LOGGER.warning("Unknown UID prefix for station %s; name cache skipped", station_uid)
+    station_cache = hass.data.get(DOMAIN, {}).get("station_cache", {})
+    station_name = station_cache.get(station_uid, {}).get("name")
+    if not station_name or station_name == station_uid:
+        station_name = (
+            entry.title
+            if entry.title and station_uid not in entry.title
+            else "YouBike"
+        )
 
     website_client = YouBikeWebsiteApiClient(async_get_clientsession(hass))
 
@@ -96,6 +104,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         entry_id=entry.entry_id,
         scan_interval=scan_interval,
         website_api=website_client,
+        station_name=station_name,
     )
 
     _LOGGER.info(
@@ -114,26 +123,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    # Register services once (guard against multiple entries)
     if not hass.services.has_service(DOMAIN, SERVICE_UPDATE):
-        async def handle_update(call: ServiceCall) -> None:
-            """Refresh YouBike coordinators, optionally filtered by station IDs."""
+        async def _handle_update(call: ServiceCall) -> None:
             target_ids: set[str] = set(call.data.get("station_ids", []))
             for config_entry in hass.config_entries.async_entries(DOMAIN):
                 if not hasattr(config_entry, "runtime_data"):
                     continue
-                c = config_entry.runtime_data
-                if target_ids and not target_ids.intersection(c._station_ids):
+                coordinator = config_entry.runtime_data
+                if target_ids and not target_ids.intersection(coordinator.station_ids):
                     continue
-                await c.async_refresh()
+                await coordinator.async_request_refresh()
 
         hass.services.async_register(
             DOMAIN,
             SERVICE_UPDATE,
-            handle_update,
-            schema=vol.Schema({
-                vol.Optional("station_ids", default=[]): vol.All(cv.ensure_list, [cv.string]),
-            }),
+            _handle_update,
+            schema=vol.Schema(
+                {
+                    vol.Optional("station_ids", default=[]): vol.All(cv.ensure_list, [cv.string]),
+                }
+            ),
         )
 
     return True
@@ -144,11 +153,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.info("Unloading YouBike entry %s", entry.entry_id)
     unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
-    remaining = [
-        e for e in hass.config_entries.async_entries(DOMAIN) if e.entry_id != entry.entry_id
-    ]
-    if not remaining:
-        hass.services.async_remove(DOMAIN, SERVICE_UPDATE)
-        hass.data.pop(DOMAIN, None)
+    if unloaded:
+        remaining = [
+            e for e in hass.config_entries.async_entries(DOMAIN) if e.entry_id != entry.entry_id
+        ]
+        if not remaining:
+            hass.services.async_remove(DOMAIN, SERVICE_UPDATE)
+            hass.data.pop(DOMAIN, None)
 
     return unloaded

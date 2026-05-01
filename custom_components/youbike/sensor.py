@@ -26,7 +26,7 @@ async def async_setup_entry(
     coordinator: YouBikeCoordinator = entry.runtime_data
 
     entities: list[SensorEntity] = []
-    for uid in coordinator._station_ids:
+    for uid in coordinator.station_ids:
         entities.append(YouBikeGeneralBikeSensor(coordinator, uid))
         entities.append(YouBikeElectricBikeSensor(coordinator, uid))
         entities.append(YouBikeReturnSensor(coordinator, uid))
@@ -58,9 +58,11 @@ class YouBikeBaseSensor(YouBikeEntityBase, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict | None:
         station = self._station
+        attrs = {"station_id": self._uid}
         if station and station.latitude is not None:
-            return {"latitude": station.latitude, "longitude": station.longitude}
-        return None
+            attrs["latitude"] = station.latitude
+            attrs["longitude"] = station.longitude
+        return attrs
 
 
 class YouBikeGeneralBikeSensor(YouBikeBaseSensor):

@@ -33,9 +33,14 @@ class YouBikeEntityBase(CoordinatorEntity[YouBikeCoordinator]):
     @property
     def device_info(self) -> DeviceInfo:
         station = self._station
+        station_name = (
+            station.name
+            if station is not None and station.name and station.name != self._uid
+            else self.coordinator.station_name
+        )
         return DeviceInfo(
             identifiers={(DOMAIN, self._uid)},
-            name=station.name if station else self._uid,
+            name=station_name,
             model=self._uid,
             manufacturer="YouBike",
         )

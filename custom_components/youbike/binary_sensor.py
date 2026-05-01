@@ -23,7 +23,7 @@ async def async_setup_entry(
     coordinator: YouBikeCoordinator = entry.runtime_data
     async_add_entities(
         YouBikeServiceStatusSensor(coordinator, uid)
-        for uid in coordinator._station_ids
+        for uid in coordinator.station_ids
     )
 
 
@@ -48,3 +48,7 @@ class YouBikeServiceStatusSensor(YouBikeEntityBase, BinarySensorEntity):
     def is_on(self) -> bool | None:
         station = self._station
         return station.service_status == 1 if station else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, str]:
+        return {"station_id": self._uid}
