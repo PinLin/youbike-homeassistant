@@ -11,6 +11,7 @@
 - **即時數量監控**：監控一般自行車、電動輔助自行車可借數量、可還空位與營運狀態。
 - **多城市支援**：支援 15 個城市／區域（台北、新北、桃園、台中、台南、高雄、新竹市、嘉義市、新竹縣、苗栗縣、嘉義縣、屏東縣、臺東縣、新竹科學工業園區、光復鄉（花蓮））。
 - **多站點管理**：每個站點為獨立的整合條目，可分別設定不同的更新頻率。
+- **手動更新服務**：提供 `youbike.update`，可更新全部站點或指定 `station_ids`。
 
 ## 安裝方式
 
@@ -44,17 +45,34 @@
 | 資料更新時間 | 最後抓取時間 |
 | 營運狀態 | 場站是否營運中（binary sensor） |
 
-`entity_id` 格式：`sensor.{UID}_{屬性}`，例如 `sensor.tpe500101001_general_bikes`。
+`entity_id` 格式會加上 `youbike` 前綴，例如：
+
+```text
+sensor.youbike_tpe500101001_general_bikes
+binary_sensor.youbike_tpe500101001_service_status
+```
 
 ## 站點 UID
 
 格式：`{城市前綴}{站號}`，例如 `TPE500101001`、`KHH501208057`。
+
+站點 UID 也會顯示在：
+
+- 裝置型號欄位
+- 實體屬性 `station_id`
 
 ## 服務
 
 ### `youbike.update`
 
 手動觸發更新。可指定 `station_ids` 清單只更新特定站點，留空則更新全部。
+
+```yaml
+service: youbike.update
+data:
+  station_ids:
+    - NWT500218121
+```
 
 ## 授權
 
