@@ -83,6 +83,12 @@
       }
     }
   },
+  "issues": {
+    "polling_failing": {
+      "title": "無法連線至 YouBike API",
+      "description": "站點 {station_id} 的資料更新已連續失敗。YouBike 官網的站點 API 為非官方介面，偶爾會短暫失敗；請確認 Home Assistant 可以連到外部網路，並查看整合的紀錄取得詳細錯誤。連線恢復後，這則通知會自動消失。"
+    }
+  },
   "selector": {
     "city": {
       "options": {

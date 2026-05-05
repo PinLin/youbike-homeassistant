@@ -83,6 +83,12 @@
       }
     }
   },
+  "issues": {
+    "polling_failing": {
+      "title": "YouBike API unreachable",
+      "description": "Sustained polling failures for station {station_id}. The official YouBike website API is unofficial and known to hiccup; check Home Assistant connectivity and review the integration log for details. The notification clears automatically once polling succeeds again."
+    }
+  },
   "selector": {
     "city": {
       "options": {

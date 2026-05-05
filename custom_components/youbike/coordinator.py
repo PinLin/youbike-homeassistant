@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
@@ -13,6 +14,12 @@ from .api import YouBikeApiError, YouBikeWebsiteApiClient
 from .const import DOMAIN, EVENT_UPDATED, UID_PREFIX_TO_AREA_CODE
 
 _LOGGER = logging.getLogger(__name__)
+
+# Threshold for surfacing a repair issue. With the default 300s polling
+# cadence this is ~25 minutes of sustained failure — enough that a real
+# outage is happening rather than a transient blip.
+_FAILURES_BEFORE_ISSUE = 5
+ISSUE_POLLING_FAILING = "polling_failing"
 
 
 @dataclass
@@ -81,6 +88,8 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
             result = await self._async_update_website()
         except YouBikeApiError as exc:
             self._consecutive_failures += 1
+            if self._consecutive_failures >= _FAILURES_BEFORE_ISSUE:
+                self._raise_polling_issue(uid)
             if (
                 self._consecutive_failures < self._MAX_CONSECUTIVE_FAILURES
                 and self.data is not None
@@ -97,6 +106,7 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
             raise UpdateFailed(f"Error fetching availability: {exc}") from exc
 
         self._consecutive_failures = 0
+        self._clear_polling_issue()
         self.hass.bus.async_fire(
             EVENT_UPDATED,
             {
@@ -149,3 +159,21 @@ class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
 
         _LOGGER.debug("Website update complete for station %s: %s", uid, "matched" if result else "no match")
         return result
+
+    def _raise_polling_issue(self, uid: str) -> None:
+        """Surface a Repairs entry once sustained polling failure crosses the threshold."""
+        ir.async_create_issue(
+            self.hass,
+            DOMAIN,
+            f"{ISSUE_POLLING_FAILING}_{self._entry_id}",
+            is_fixable=False,
+            severity=ir.IssueSeverity.ERROR,
+            translation_key=ISSUE_POLLING_FAILING,
+            translation_placeholders={"station_id": uid},
+        )
+
+    def _clear_polling_issue(self) -> None:
+        """Drop the Repairs entry once the next refresh succeeds."""
+        ir.async_delete_issue(
+            self.hass, DOMAIN, f"{ISSUE_POLLING_FAILING}_{self._entry_id}"
+        )
