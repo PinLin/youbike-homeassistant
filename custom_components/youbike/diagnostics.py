@@ -7,6 +7,10 @@ from typing import Any
 from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.device_registry import DeviceEntry
+
+from .const import DOMAIN
 
 # Station coordinates and IDs are public information for YouBike, so we keep
 # the redaction set conservative — only common credential keys we'd want
@@ -45,4 +49,72 @@ async def async_get_config_entry_diagnostics(
             ),
         },
         "data": async_redact_data(_serialize(raw_data), REDACT_KEYS),
+    }
+
+
+async def async_get_device_diagnostics(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    device: DeviceEntry,
+) -> dict[str, Any]:
+    """Return diagnostics for a single station.
+
+    Each YouBike device corresponds to one station UID; this dump
+    includes the StationData snapshot the coordinator stores for that
+    UID and a roster of every entity registered against the device
+    with its current state and attributes — enough to triage "this
+    entity shows wrong value" bug reports without screenshots.
+    """
+    coordinator = entry.runtime_data
+
+    # Resolve uid from the device's identifiers; entity.py uses
+    # identifiers={(DOMAIN, uid)} verbatim.
+    uid: str | None = None
+    for ident_domain, identifier in device.identifiers:
+        if ident_domain == DOMAIN:
+            uid = identifier
+            break
+
+    station_snapshot: Any = None
+    if uid and coordinator.data is not None:
+        station = coordinator.data.get(uid)
+        if station is not None:
+            station_snapshot = _serialize(station)
+
+    ent_reg = er.async_get(hass)
+    entities: list[dict[str, Any]] = []
+    for ent in er.async_entries_for_device(
+        ent_reg, device.id, include_disabled_entities=True
+    ):
+        state = hass.states.get(ent.entity_id)
+        entities.append(
+            {
+                "entity_id": ent.entity_id,
+                "unique_id": ent.unique_id,
+                "platform": ent.platform,
+                "domain": ent.domain,
+                "translation_key": ent.translation_key,
+                "device_class": ent.device_class or ent.original_device_class,
+                "disabled_by": ent.disabled_by,
+                "state": state.state if state else None,
+                "attributes": dict(state.attributes) if state else None,
+            }
+        )
+
+    return {
+        "device": {
+            "id": device.id,
+            "name": device.name,
+            "name_by_user": device.name_by_user,
+            "manufacturer": device.manufacturer,
+            "model": device.model,
+            "identifiers": [list(i) for i in device.identifiers],
+        },
+        "uid": uid,
+        "station": (
+            async_redact_data(station_snapshot, REDACT_KEYS)
+            if station_snapshot is not None
+            else None
+        ),
+        "entities": async_redact_data(entities, REDACT_KEYS),
     }
