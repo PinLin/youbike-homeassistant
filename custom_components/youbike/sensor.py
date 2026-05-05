@@ -39,7 +39,6 @@ class YouBikeBaseSensor(YouBikeEntityBase, SensorEntity):
     """Sensor base — adds platform-specific defaults and entity_id."""
 
     _attr_native_unit_of_measurement = "bikes"
-    _attr_icon = "mdi:bicycle"
 
     def __init__(self, coordinator: YouBikeCoordinator, uid: str) -> None:
         super().__init__(coordinator, uid)
@@ -69,7 +68,6 @@ class YouBikeGeneralBikeSensor(YouBikeBaseSensor):
     """Sensor for available general (non-electric) bikes to rent."""
 
     _sensor_type = "general_bikes"
-    _attr_icon = "mdi:bicycle"
     _attr_translation_key = "general_bikes"
     _attr_state_class = SensorStateClass.MEASUREMENT
 
@@ -83,7 +81,6 @@ class YouBikeElectricBikeSensor(YouBikeBaseSensor):
     """Sensor for available electric-assist bikes to rent."""
 
     _sensor_type = "electric_bikes"
-    _attr_icon = "mdi:bicycle-electric"
     _attr_translation_key = "electric_bikes"
     _attr_state_class = SensorStateClass.MEASUREMENT
 
@@ -97,7 +94,6 @@ class YouBikeReturnSensor(YouBikeBaseSensor):
     """Sensor for available docks to return bikes."""
 
     _sensor_type = "available_docks"
-    _attr_icon = "mdi:bicycle-basket"
     _attr_translation_key = "available_docks"
     _attr_state_class = SensorStateClass.MEASUREMENT
 
@@ -113,7 +109,6 @@ class YouBikeLastUpdateSensor(YouBikeBaseSensor):
     _sensor_type = "last_update"
     _attr_device_class = SensorDeviceClass.TIMESTAMP
     _attr_native_unit_of_measurement = None
-    _attr_icon = "mdi:clock-outline"
     _attr_translation_key = "last_update"
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 

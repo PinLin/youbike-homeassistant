@@ -1,0 +1,18 @@
+{
+  "entity": {
+    "sensor": {
+      "general_bikes": {
+        "default": "mdi:bicycle"
+      },
+      "electric_bikes": {
+        "default": "mdi:bicycle-electric"
+      },
+      "available_docks": {
+        "default": "mdi:bicycle-basket"
+      },
+      "last_update": {
+        "default": "mdi:clock-outline"
+      }
+    }
+  }
+}
