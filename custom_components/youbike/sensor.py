@@ -70,6 +70,7 @@ class YouBikeGeneralBikeSensor(YouBikeBaseSensor):
     _sensor_type = "general_bikes"
     _attr_translation_key = "general_bikes"
     _attr_state_class = SensorStateClass.MEASUREMENT
+    _state_attrs = ("native_value", "available")
 
     @property
     def native_value(self) -> int | None:
@@ -83,6 +84,7 @@ class YouBikeElectricBikeSensor(YouBikeBaseSensor):
     _sensor_type = "electric_bikes"
     _attr_translation_key = "electric_bikes"
     _attr_state_class = SensorStateClass.MEASUREMENT
+    _state_attrs = ("native_value", "available")
 
     @property
     def native_value(self) -> int | None:
@@ -96,6 +98,7 @@ class YouBikeReturnSensor(YouBikeBaseSensor):
     _sensor_type = "available_docks"
     _attr_translation_key = "available_docks"
     _attr_state_class = SensorStateClass.MEASUREMENT
+    _state_attrs = ("native_value", "available")
 
     @property
     def native_value(self) -> int | None:
@@ -111,6 +114,7 @@ class YouBikeLastUpdateSensor(YouBikeBaseSensor):
     _attr_native_unit_of_measurement = None
     _attr_translation_key = "last_update"
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _state_attrs = ("native_value", "available")
 
     @property
     def native_value(self) -> datetime | None:

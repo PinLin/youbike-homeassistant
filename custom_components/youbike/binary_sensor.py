@@ -34,6 +34,7 @@ class YouBikeServiceStatusSensor(YouBikeEntityBase, BinarySensorEntity):
     _attr_translation_key = "service_status"
     _attr_device_class = BinarySensorDeviceClass.RUNNING
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _state_attrs = ("is_on", "available")
 
     def __init__(self, coordinator: YouBikeCoordinator, uid: str) -> None:
         super().__init__(coordinator, uid)
