@@ -39,16 +39,17 @@ async def async_get_config_entry_diagnostics(
 ) -> dict[str, Any]:
     """Return redacted diagnostic info for one config entry."""
     coordinator = entry.runtime_data
-    raw_data = coordinator.data if coordinator is not None else None
+    last_update_time = coordinator.last_update_success_time
 
     return {
         "entry": async_redact_data(entry.as_dict(), REDACT_KEYS),
         "coordinator": {
-            "last_update_success": (
-                coordinator.last_update_success if coordinator is not None else None
+            "last_update_success_time": (
+                last_update_time.isoformat() if last_update_time else None
             ),
+            "last_update_success": coordinator.last_update_success,
         },
-        "data": async_redact_data(_serialize(raw_data), REDACT_KEYS),
+        "data": async_redact_data(_serialize(coordinator.data), REDACT_KEYS),
     }
 
 
@@ -66,6 +67,7 @@ async def async_get_device_diagnostics(
     entity shows wrong value" bug reports without screenshots.
     """
     coordinator = entry.runtime_data
+    last_update_time = coordinator.last_update_success_time
 
     # Resolve uid from the device's identifiers; entity.py uses
     # identifiers={(DOMAIN, uid)} verbatim.
@@ -109,6 +111,12 @@ async def async_get_device_diagnostics(
             "manufacturer": device.manufacturer,
             "model": device.model,
             "identifiers": [list(i) for i in device.identifiers],
+        },
+        "coordinator": {
+            "last_update_success_time": (
+                last_update_time.isoformat() if last_update_time else None
+            ),
+            "last_update_success": coordinator.last_update_success,
         },
         "uid": uid,
         "station": (

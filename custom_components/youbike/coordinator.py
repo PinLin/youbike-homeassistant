@@ -7,7 +7,10 @@ from datetime import datetime, timedelta
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import issue_registry as ir
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import (
+    TimestampDataUpdateCoordinator,
+    UpdateFailed,
+)
 from homeassistant.util import dt as dt_util
 
 from .api import YouBikeApiError, YouBikeWebsiteApiClient
@@ -35,7 +38,7 @@ class StationData:
     longitude: float | None = None
 
 
-class YouBikeCoordinator(DataUpdateCoordinator[dict[str, StationData]]):
+class YouBikeCoordinator(TimestampDataUpdateCoordinator[dict[str, StationData]]):
     """Coordinator that fetches YouBike data for a single station."""
 
     # Tolerate this many consecutive failures by returning the previous data
