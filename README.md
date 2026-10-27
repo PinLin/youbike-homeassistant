@@ -2,7 +2,6 @@
 
 [![GitHub Release](https://img.shields.io/github/release/PinLin/youbike-homeassistant.svg?style=flat-square)](https://github.com/PinLin/youbike-homeassistant/releases)
 [![HACS Badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=flat-square)](https://github.com/hacs/integration)
-[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
 將 YouBike 站點即時資訊整合到 Home Assistant，隨時掌握附近站點的可用車輛與空位數量。
 
@@ -105,7 +104,3 @@ logger:
 ## 免責聲明
 
 本整合為非官方、社群維護的專案，與微笑單車股份有限公司無任何關係。資料來源為 YouBike 官網公開的網頁 API；該介面為非官方端點，可能在沒有預告的情況下變更或停用。
-
-## 授權
-
-MIT License
